@@ -5,10 +5,7 @@ import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.device.SmartLight;
 import com.bootcamp.smarthome.device.SmartLock;
 import com.bootcamp.smarthome.device.SmartThermostat;
-import com.bootcamp.smarthome.exception.DeviceNotFoundException;
-import com.bootcamp.smarthome.exception.HomeAutomationException;
-import com.bootcamp.smarthome.exception.InvalidCommandException;
-import com.bootcamp.smarthome.exception.InvalidValueException;
+import com.bootcamp.smarthome.exception.*;
 
 /**
  * Entry point for the Smart Home Controller demo.
@@ -59,19 +56,19 @@ public class Main {
         try {
             mainThermostat.setTemperature(99.0);
         } catch (InvalidValueException e) {
-            // TO FIX ?
             System.out.println(e.getMessage());
-            // ^^^^^^TO FIX ?
         }
 
         try {
             System.out.println("\n=== Scenario 4: Offline device ===");
             // LIGHT_03 is offline — command should be skipped with a warning
             controller.sendCommand("LIGHT_03 TURN_ON");
+        } catch (DeviceOfflineException e) {
+            System.out.println("Scenario 4 interrupted because of a DeviceOfflineException exception " + e.getMessage());
         } catch (HomeAutomationException e) {
-            System.out.println("Scenario 4 interrupted because of the exception " + e.getMessage());
+            System.out.println("Scenario 4 interrupted because of a HomeAutomationException exception " + e.getMessage());
         }
-        
+
         System.out.println("\n=== Scenario 5: Unlock with correct PIN ===");
         // Direct call to validatePin() to demonstrate intended correct behaviour
         // (going through sendCommand() would strip the PIN via BUG-LG-2).
@@ -96,8 +93,8 @@ public class Main {
             controller.sendCommand("SENSOR_99 TURN_ON");
         } catch (DeviceNotFoundException e) {
             System.out.println("Scenario 7 interrupted because of a DeviceNotFoundException exception " + e.getMessage());
-        } catch (HomeAutomationException o){
-            System.out.println("Scenario 7 interrupted because of a HomeAutomationException exception " + o.getMessage());
+        } catch (HomeAutomationException e){
+            System.out.println("Scenario 7 interrupted because of a HomeAutomationException exception " + e.getMessage());
         }
 
         System.out.println("\n=== All scenarios complete ===");
