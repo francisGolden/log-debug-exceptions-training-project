@@ -32,18 +32,19 @@ public class SmartLock extends Device {
      */
     public void validatePin(String pin) throws InvalidCommandException {
         if (pin == null  || pin.isBlank()) {
+            logger.error("SECURITY ALERT: PIN cannot be empty for [{}].", getName());
             throw new InvalidCommandException("Pin cannot be empty.");
         } else if (!pin.equals(storedPin)) {
-            System.out.println("SECURITY ALERT: Incorrect PIN entered for " + getName() + ".");
+            logger.error("SECURITY ALERT: Incorrect PIN entered for [{}].", getName());
             throw new InvalidCommandException("Incorrect PIN entered for " + getName());
         }
         isLocked = false;
-        System.out.println(getName() + " unlocked successfully.");
+        logger.info("[{}] unlocked successfully.", getName());
     }
 
     public void lock() {
         isLocked = true;
-        System.out.println(getName() + " locked.");
+        logger.info("[{}] locked.", getName());
     }
 
     @Override
@@ -59,7 +60,7 @@ public class SmartLock extends Device {
         } else if (command.equals("TURN_OFF")) {
             turnOff();
         } else {
-            System.out.println("Unknown command for SmartLock '" + getName() + "': " + command);
+            logger.warn("Unknown command for SmartLock [{}]: [{}]", getName(), command);
         }
     }
 

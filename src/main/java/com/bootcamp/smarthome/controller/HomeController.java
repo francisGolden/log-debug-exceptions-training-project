@@ -76,7 +76,7 @@ public class HomeController {
 
         String deviceId = CommandParser.extractDeviceId(fullCommand);
         String command  = CommandParser.extractCommand(fullCommand);
-        logger.debug("Received command [{}] for deviceId [{}]", command, deviceId);
+        logger.debug("Received command [{}]", fullCommand);
 
         try {
             Device device = findDevice(deviceId);
