@@ -1,9 +1,7 @@
 package com.bootcamp.smarthome.controller;
 
 import com.bootcamp.smarthome.device.Device;
-import com.bootcamp.smarthome.exception.HomeAutomationException;
-import com.bootcamp.smarthome.exception.InvalidCommandException;
-import com.bootcamp.smarthome.exception.InvalidValueException;
+import com.bootcamp.smarthome.exception.*;
 
 /**
  * Central hub that manages all registered smart devices.
@@ -74,23 +72,19 @@ public class HomeController {
     public void sendCommand(String fullCommand) throws HomeAutomationException {
         String deviceId = CommandParser.extractDeviceId(fullCommand);
         String command  = CommandParser.extractCommand(fullCommand);
-        String message = "";
         try {
             Device device = findDevice(deviceId);
 
             if (device == null) {
-                message = "Device not found: " + deviceId;
-                return;
+                throw new DeviceNotFoundException("Device not found: " + deviceId);
             }
 
             if (!device.isOnline()) {
-                message = "WARNING: Device '" + deviceId + "' is offline — command skipped.";
-                return;
+                throw new DeviceOfflineException("WARNING: Device '" + deviceId + "' is offline — command skipped.");
             }
 
             device.executeCommand(command);
         } catch (HomeAutomationException e) {
-            System.out.println(message);
             throw new HomeAutomationException("Command '" + fullCommand + "' failed for device '" + deviceId + "'", e);
         } finally {
             // FIX LOG
