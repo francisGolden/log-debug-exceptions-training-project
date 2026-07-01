@@ -90,7 +90,6 @@ public class HomeController {
 
         try {
             device.executeCommand(command);
-
             logger.info("Command [{}] executed successfully.", command);
         } catch (HomeAutomationException e) {
             logger.error("Command [{}] failed for device [{}]'", command, deviceId);
