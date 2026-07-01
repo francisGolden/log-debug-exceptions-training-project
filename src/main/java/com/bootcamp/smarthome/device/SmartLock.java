@@ -1,7 +1,9 @@
 package com.bootcamp.smarthome.device;
 
+import com.bootcamp.smarthome.controller.HomeController;
 import com.bootcamp.smarthome.exception.InvalidCommandException;
-import com.bootcamp.smarthome.exception.InvalidValueException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A PIN-protected smart door lock.
@@ -13,6 +15,7 @@ public class SmartLock extends Device {
 
     private boolean isLocked;
     private final String storedPin;
+    private static final Logger logger = LoggerFactory.getLogger(SmartLock.class);
 
     public SmartLock(String deviceId, String name, boolean isOnline, String pin) {
         super(deviceId, name, isOnline);

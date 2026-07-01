@@ -2,6 +2,8 @@ package com.bootcamp.smarthome.controller;
 
 import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Central hub that manages all registered smart devices.
@@ -12,6 +14,7 @@ import com.bootcamp.smarthome.exception.*;
 public class HomeController {
 
     public static final int MAX_DEVICES = 8;
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     private final Device[] devices = new Device[MAX_DEVICES];
     private int deviceCount = 0;
@@ -35,7 +38,7 @@ public class HomeController {
         }
         devices[deviceCount] = device;
         deviceCount++;
-        System.out.println("Device registered: " + device);
+        logger.info("Device registered: " + device);
     }
 
     // -------------------------------------------------------------------------
@@ -70,26 +73,31 @@ public class HomeController {
      * @param fullCommand the full command string
      */
     public void sendCommand(String fullCommand) throws HomeAutomationException {
+
         String deviceId = CommandParser.extractDeviceId(fullCommand);
         String command  = CommandParser.extractCommand(fullCommand);
+        logger.debug("Received command [{}] for deviceId [{}]", command, deviceId);
+
         try {
             Device device = findDevice(deviceId);
-
             if (device == null) {
-                throw new DeviceNotFoundException("Device not found: " + deviceId);
+                logger.warn("Received command [{}] WARNING: Device [{}] is not found — command skipped.", command, deviceId);
+                return;
+//                throw new DeviceNotFoundException("Device not found: " + deviceId);
             }
-
             if (!device.isOnline()) {
-                throw new DeviceOfflineException("WARNING: Device '" + deviceId + "' is offline — command skipped.");
+                logger.warn("Received command [{}] WARNING: Device [{}] is offline — command skipped.", command, deviceId);
+                return;
+//               throw new DeviceOfflineException("WARNING: Device '" + deviceId + "' is offline — command skipped.");
             }
-
             device.executeCommand(command);
+
+            logger.info("Command [{}] executed successfully.", command);
         } catch (HomeAutomationException e) {
+            logger.error("Command [{}] failed for device [{}]'", command, deviceId);
             throw new HomeAutomationException("Command '" + fullCommand + "' failed for device '" + deviceId + "'", e);
         } finally {
-            // FIX LOG
-            System.out.println("Command processing ended for device [id]");
-            // FIX LOG ^^^^f
+            logger.info("Command processing ended for device [{}]", deviceId);
         }
 
     }
@@ -100,9 +108,9 @@ public class HomeController {
 
     /** Prints the status of every registered device. */
     public void printAllDevices() {
-        System.out.println("=== Registered Devices (" + deviceCount + "/" + MAX_DEVICES + ") ===");
+        logger.info("=== Registered Devices ({}/{}) ===", deviceCount, MAX_DEVICES);
         for (int i = 0; i < deviceCount; i++) {
-            System.out.println("  " + devices[i]);
+            logger.info("[{}]", devices[i]);
         }
     }
 
