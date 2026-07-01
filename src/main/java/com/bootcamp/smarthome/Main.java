@@ -5,6 +5,8 @@ import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.device.SmartLight;
 import com.bootcamp.smarthome.device.SmartLock;
 import com.bootcamp.smarthome.device.SmartThermostat;
+import com.bootcamp.smarthome.exception.InvalidCommandException;
+import com.bootcamp.smarthome.exception.InvalidValueException;
 
 /**
  * Entry point for the Smart Home Controller demo.
@@ -43,7 +45,17 @@ public class Main {
         // This test calls setTemperature() directly to isolate temperature validation.
         Device found = controller.findDevice("THERMO_01");
         SmartThermostat mainThermostat = (SmartThermostat) found;
-        mainThermostat.setTemperature(99.0);
+
+
+        try {
+            mainThermostat.setTemperature(99.0);
+        } catch (InvalidValueException e) {
+            // TO FIX ?
+            System.out.println(e.getMessage());
+            // ^^^^^^TO FIX ?
+        }
+
+
 
         System.out.println("\n=== Scenario 4: Offline device ===");
         // LIGHT_03 is offline — command should be skipped with a warning
@@ -54,7 +66,15 @@ public class Main {
         // (going through sendCommand() would strip the PIN via BUG-LG-2).
         Device foundLock = controller.findDevice("LOCK_01");
         SmartLock frontDoor = (SmartLock) foundLock;
-        frontDoor.validatePin("4321"); // should print "Front Door Lock unlocked successfully."
+
+        // COMPLETE THIS PART
+        try {
+            frontDoor.validatePin("4321"); // should print "Front Door Lock unlocked successfully."
+        } catch (InvalidCommandException e){
+            System.out.println(e.getMessage());
+        }
+        // COMPLETE THIS PART ^^^^
+
 
         System.out.println("\n=== Scenario 6: Unlock with null PIN ===");
         controller.sendCommand("LOCK_02 UNLOCK");
