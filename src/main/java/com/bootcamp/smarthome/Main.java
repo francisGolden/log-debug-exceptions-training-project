@@ -5,6 +5,7 @@ import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.device.SmartLight;
 import com.bootcamp.smarthome.device.SmartLock;
 import com.bootcamp.smarthome.device.SmartThermostat;
+import com.bootcamp.smarthome.exception.DeviceNotFoundException;
 import com.bootcamp.smarthome.exception.HomeAutomationException;
 import com.bootcamp.smarthome.exception.InvalidCommandException;
 import com.bootcamp.smarthome.exception.InvalidValueException;
@@ -40,14 +41,14 @@ public class Main {
             controller.sendCommand("LIGHT_02 TURN_ON");
             controller.sendCommand("THERMO_01 SET_TEMP 22.5");
         } catch (HomeAutomationException e) {
-            System.err.println("Scenario 1 interrupted because of the exception " + e.getMessage());
+            System.out.println("Scenario 1 interrupted because of the exception " + e.getMessage());
         }
 
         try {
             System.out.println("\n=== Scenario 2: Set brightness ===");
             controller.sendCommand("LIGHT_01 SET_BRIGHTNESS 80");
         } catch (HomeAutomationException e){
-            System.err.println("Scenario 2 interrupted because of the exception " + e.getMessage());
+            System.out.println("Scenario 2 interrupted because of the exception " + e.getMessage());
         }
 
         System.out.println("\n=== Scenario 3: Invalid temperature ===");
@@ -59,7 +60,7 @@ public class Main {
             mainThermostat.setTemperature(99.0);
         } catch (InvalidValueException e) {
             // TO FIX ?
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
             // ^^^^^^TO FIX ?
         }
 
@@ -68,10 +69,9 @@ public class Main {
             // LIGHT_03 is offline — command should be skipped with a warning
             controller.sendCommand("LIGHT_03 TURN_ON");
         } catch (HomeAutomationException e) {
-            System.err.println("Scenario 4 interrupted because of the exception " + e.getMessage());
+            System.out.println("Scenario 4 interrupted because of the exception " + e.getMessage());
         }
-
-
+        
         System.out.println("\n=== Scenario 5: Unlock with correct PIN ===");
         // Direct call to validatePin() to demonstrate intended correct behaviour
         // (going through sendCommand() would strip the PIN via BUG-LG-2).
@@ -81,21 +81,23 @@ public class Main {
         try {
             frontDoor.validatePin("4321"); // should print "Front Door Lock unlocked successfully."
         } catch (InvalidCommandException e){
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
 
         try {
             System.out.println("\n=== Scenario 6: Unlock with null PIN ===");
             controller.sendCommand("LOCK_02 UNLOCK");
         } catch (HomeAutomationException e) {
-            System.err.println("Scenario 6 interrupted because of the exception " + e.getMessage());
+            System.out.println("Scenario 6 interrupted because of the exception " + e.getMessage());
         }
 
         try {
             System.out.println("\n=== Scenario 7: Find non-existent device ===");
             controller.sendCommand("SENSOR_99 TURN_ON");
-        } catch (HomeAutomationException e) {
-            System.err.println("Scenario 7 interrupted because of the exception " + e.getMessage());
+        } catch (DeviceNotFoundException e) {
+            System.out.println("Scenario 7 interrupted because of a DeviceNotFoundException exception " + e.getMessage());
+        } catch (HomeAutomationException o){
+            System.out.println("Scenario 7 interrupted because of a HomeAutomationException exception " + o.getMessage());
         }
 
         System.out.println("\n=== All scenarios complete ===");

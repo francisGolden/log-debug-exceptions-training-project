@@ -72,24 +72,23 @@ public class HomeController {
      *
      * @param fullCommand the full command string
      */
-    public void sendCommand(String fullCommand) throws HomeAutomationException {
+    public void sendCommand(String fullCommand) throws HomeAutomationException, DeviceNotFoundException {
 
         String deviceId = CommandParser.extractDeviceId(fullCommand);
         String command  = CommandParser.extractCommand(fullCommand);
         Device device = findDevice(deviceId);
         logger.debug("Received command [{}]", fullCommand);
 
+        if (device == null) {
+            logger.warn("Received command [{}] WARNING: Device [{}] is not found — command skipped.", command, deviceId);
+            throw new DeviceNotFoundException("Device not found: " + deviceId);
+        }
+        if (!device.isOnline()) {
+            logger.warn("Received command [{}] WARNING: Device [{}] is offline — command skipped.", command, deviceId);
+            throw new DeviceOfflineException("WARNING: Device '" + deviceId + "' is offline — command skipped.");
+        }
+
         try {
-            if (device == null) {
-                logger.warn("Received command [{}] WARNING: Device [{}] is not found — command skipped.", command, deviceId);
-                return;
-                // throw new DeviceNotFoundException("Device not found: " + deviceId);
-            }
-            if (!device.isOnline()) {
-                logger.warn("Received command [{}] WARNING: Device [{}] is offline — command skipped.", command, deviceId);
-                return;
-                // throw new DeviceOfflineException("WARNING: Device '" + deviceId + "' is offline — command skipped.");
-            }
             device.executeCommand(command);
 
             logger.info("Command [{}] executed successfully.", command);
