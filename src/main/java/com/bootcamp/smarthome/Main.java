@@ -49,7 +49,7 @@ public class Main {
         } catch (HomeAutomationException e){
             System.err.println("Scenario 2 interrupted because of the exception " + e.getMessage());
         }
-        
+
         System.out.println("\n=== Scenario 3: Invalid temperature ===");
         // This test calls setTemperature() directly to isolate temperature validation.
         Device found = controller.findDevice("THERMO_01");
