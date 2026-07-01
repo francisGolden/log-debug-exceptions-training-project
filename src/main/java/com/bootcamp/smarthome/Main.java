@@ -5,6 +5,7 @@ import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.device.SmartLight;
 import com.bootcamp.smarthome.device.SmartLock;
 import com.bootcamp.smarthome.device.SmartThermostat;
+import com.bootcamp.smarthome.exception.HomeAutomationException;
 import com.bootcamp.smarthome.exception.InvalidCommandException;
 import com.bootcamp.smarthome.exception.InvalidValueException;
 
@@ -33,13 +34,23 @@ public class Main {
 
         controller.printAllDevices();
 
-        System.out.println("\n=== Scenario 1: Normal device commands ===");
-        controller.sendCommand("LIGHT_01 TURN_ON");
-        controller.sendCommand("LIGHT_02 TURN_ON");
-        controller.sendCommand("THERMO_01 SET_TEMP 22.5");
+        try {
+            System.out.println("\n=== Scenario 1: Normal device commands ===");
+            controller.sendCommand("LIGHT_01 TURN_ON");
+            controller.sendCommand("LIGHT_02 TURN_ON");
+            controller.sendCommand("THERMO_01 SET_TEMP 22.5");
+        } catch (HomeAutomationException e) {
+            System.err.println("Scenario 1 interrupted because of the exception " + e.getMessage());
+        }
 
-        System.out.println("\n=== Scenario 2: Set brightness ===");
-        controller.sendCommand("LIGHT_01 SET_BRIGHTNESS 80");
+        try {
+            System.out.println("\n=== Scenario 2: Set brightness ===");
+            controller.sendCommand("LIGHT_01 SET_BRIGHTNESS 80");
+        } catch (HomeAutomationException e){
+            System.err.println("Scenario 2 interrupted because of the exception " + e.getMessage());
+        }
+
+
 
         System.out.println("\n=== Scenario 3: Invalid temperature ===");
         // This test calls setTemperature() directly to isolate temperature validation.
@@ -51,15 +62,20 @@ public class Main {
             mainThermostat.setTemperature(99.0);
         } catch (InvalidValueException e) {
             // TO FIX ?
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             // ^^^^^^TO FIX ?
         }
 
 
 
-        System.out.println("\n=== Scenario 4: Offline device ===");
-        // LIGHT_03 is offline — command should be skipped with a warning
-        controller.sendCommand("LIGHT_03 TURN_ON");
+        try {
+            System.out.println("\n=== Scenario 4: Offline device ===");
+            // LIGHT_03 is offline — command should be skipped with a warning
+            controller.sendCommand("LIGHT_03 TURN_ON");
+        } catch (HomeAutomationException e) {
+            System.err.println("Scenario 4 interrupted because of the exception " + e.getMessage());
+        }
+
 
         System.out.println("\n=== Scenario 5: Unlock with correct PIN ===");
         // Direct call to validatePin() to demonstrate intended correct behaviour
@@ -67,20 +83,28 @@ public class Main {
         Device foundLock = controller.findDevice("LOCK_01");
         SmartLock frontDoor = (SmartLock) foundLock;
 
-        // COMPLETE THIS PART
+        // FIX LOGGING
         try {
             frontDoor.validatePin("4321"); // should print "Front Door Lock unlocked successfully."
         } catch (InvalidCommandException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
-        // COMPLETE THIS PART ^^^^
+        // FIX LOGGING ^^^^
 
 
-        System.out.println("\n=== Scenario 6: Unlock with null PIN ===");
-        controller.sendCommand("LOCK_02 UNLOCK");
+        try {
+            System.out.println("\n=== Scenario 6: Unlock with null PIN ===");
+            controller.sendCommand("LOCK_02 UNLOCK");
+        } catch (HomeAutomationException e) {
+            System.err.println("Scenario 6 interrupted because of the exception " + e.getMessage());
+        }
 
-        System.out.println("\n=== Scenario 7: Find non-existent device ===");
-        controller.sendCommand("SENSOR_99 TURN_ON");
+        try {
+            System.out.println("\n=== Scenario 7: Find non-existent device ===");
+            controller.sendCommand("SENSOR_99 TURN_ON");
+        } catch (HomeAutomationException e) {
+            System.err.println("Scenario 7 interrupted because of the exception " + e.getMessage());
+        }
 
         System.out.println("\n=== All scenarios complete ===");
         controller.printAllDevices();

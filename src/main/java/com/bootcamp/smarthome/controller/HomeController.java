@@ -1,6 +1,9 @@
 package com.bootcamp.smarthome.controller;
 
 import com.bootcamp.smarthome.device.Device;
+import com.bootcamp.smarthome.exception.HomeAutomationException;
+import com.bootcamp.smarthome.exception.InvalidCommandException;
+import com.bootcamp.smarthome.exception.InvalidValueException;
 
 /**
  * Central hub that manages all registered smart devices.
@@ -68,23 +71,33 @@ public class HomeController {
      *
      * @param fullCommand the full command string
      */
-    public void sendCommand(String fullCommand) {
+    public void sendCommand(String fullCommand) throws HomeAutomationException {
         String deviceId = CommandParser.extractDeviceId(fullCommand);
         String command  = CommandParser.extractCommand(fullCommand);
+        String message = "";
+        try {
+            Device device = findDevice(deviceId);
 
-        Device device = findDevice(deviceId);
+            if (device == null) {
+                message = "Device not found: " + deviceId;
+                return;
+            }
 
-        if (device == null) {
-            System.out.println("Device not found: " + deviceId);
-            return;
+            if (!device.isOnline()) {
+                message = "WARNING: Device '" + deviceId + "' is offline — command skipped.";
+                return;
+            }
+
+            device.executeCommand(command);
+        } catch (HomeAutomationException e) {
+            System.out.println(message);
+            throw new HomeAutomationException("Command '" + fullCommand + "' failed for device '" + deviceId + "'", e);
+        } finally {
+            // FIX LOG
+            System.out.println("Command processing ended for device [id]");
+            // FIX LOG ^^^^f
         }
 
-        if (!device.isOnline()) {
-            System.out.println("WARNING: Device '" + deviceId + "' is offline — command skipped.");
-            return;
-        }
-
-        device.executeCommand(command);
     }
 
     // -------------------------------------------------------------------------
