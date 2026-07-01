@@ -6,6 +6,7 @@ public class InvalidValueException extends HomeAutomationException {
     private String constraint;
 
     public InvalidValueException(String field, Object value, String constraint){
+        super();
         this.field = field;
         this.value = value;
         this.constraint = constraint;
