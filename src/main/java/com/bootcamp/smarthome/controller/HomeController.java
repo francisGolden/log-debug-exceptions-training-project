@@ -83,12 +83,12 @@ public class HomeController {
             if (device == null) {
                 logger.warn("Received command [{}] WARNING: Device [{}] is not found — command skipped.", command, deviceId);
                 return;
-//                throw new DeviceNotFoundException("Device not found: " + deviceId);
+                // throw new DeviceNotFoundException("Device not found: " + deviceId);
             }
             if (!device.isOnline()) {
                 logger.warn("Received command [{}] WARNING: Device [{}] is offline — command skipped.", command, deviceId);
                 return;
-//               throw new DeviceOfflineException("WARNING: Device '" + deviceId + "' is offline — command skipped.");
+                // throw new DeviceOfflineException("WARNING: Device '" + deviceId + "' is offline — command skipped.");
             }
             device.executeCommand(command);
 

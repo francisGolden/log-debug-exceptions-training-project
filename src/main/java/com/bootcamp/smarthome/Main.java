@@ -49,14 +49,11 @@ public class Main {
         } catch (HomeAutomationException e){
             System.err.println("Scenario 2 interrupted because of the exception " + e.getMessage());
         }
-
-
-
+        
         System.out.println("\n=== Scenario 3: Invalid temperature ===");
         // This test calls setTemperature() directly to isolate temperature validation.
         Device found = controller.findDevice("THERMO_01");
         SmartThermostat mainThermostat = (SmartThermostat) found;
-
 
         try {
             mainThermostat.setTemperature(99.0);
@@ -65,8 +62,6 @@ public class Main {
             System.err.println(e.getMessage());
             // ^^^^^^TO FIX ?
         }
-
-
 
         try {
             System.out.println("\n=== Scenario 4: Offline device ===");
@@ -83,14 +78,11 @@ public class Main {
         Device foundLock = controller.findDevice("LOCK_01");
         SmartLock frontDoor = (SmartLock) foundLock;
 
-        // FIX LOGGING
         try {
             frontDoor.validatePin("4321"); // should print "Front Door Lock unlocked successfully."
         } catch (InvalidCommandException e){
             System.err.println(e.getMessage());
         }
-        // FIX LOGGING ^^^^
-
 
         try {
             System.out.println("\n=== Scenario 6: Unlock with null PIN ===");
