@@ -1,5 +1,10 @@
 package com.bootcamp.smarthome.device;
 
+import com.bootcamp.smarthome.controller.HomeController;
+import com.bootcamp.smarthome.exception.InvalidCommandException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A PIN-protected smart door lock.
  *
@@ -10,6 +15,7 @@ public class SmartLock extends Device {
 
     private boolean isLocked;
     private final String storedPin;
+    private static final Logger logger = LoggerFactory.getLogger(SmartLock.class);
 
     public SmartLock(String deviceId, String name, boolean isOnline, String pin) {
         super(deviceId, name, isOnline);
@@ -24,22 +30,25 @@ public class SmartLock extends Device {
     /**
      * Validates the supplied PIN against the stored PIN.
      */
-    public void validatePin(String pin) {
-        if (pin.equals(storedPin)) {
-            isLocked = false;
-            System.out.println(getName() + " unlocked successfully.");
-        } else {
-            System.out.println("SECURITY ALERT: Incorrect PIN entered for " + getName() + ".");
+    public void validatePin(String pin) throws InvalidCommandException {
+        if (pin == null  || pin.isBlank()) {
+            logger.error("SECURITY ALERT: PIN cannot be empty for [{}].", getName());
+            throw new InvalidCommandException("Pin cannot be empty.");
+        } else if (!pin.equals(storedPin)) {
+            logger.error("SECURITY ALERT: Incorrect PIN entered for [{}].", getName());
+            throw new InvalidCommandException("Incorrect PIN entered for " + getName());
         }
+        isLocked = false;
+        logger.info("[{}] unlocked successfully.", getName());
     }
 
     public void lock() {
         isLocked = true;
-        System.out.println(getName() + " locked.");
+        logger.info("[{}] locked.", getName());
     }
 
     @Override
-    public void executeCommand(String command) {
+    public void executeCommand(String command) throws InvalidCommandException {
         if (command.startsWith("UNLOCK")) {
             String[] parts = command.split(" ");
             String pin = (parts.length > 1) ? parts[1] : null;
@@ -51,7 +60,7 @@ public class SmartLock extends Device {
         } else if (command.equals("TURN_OFF")) {
             turnOff();
         } else {
-            System.out.println("Unknown command for SmartLock '" + getName() + "': " + command);
+            logger.warn("Unknown command for SmartLock [{}]: [{}]", getName(), command);
         }
     }
 
