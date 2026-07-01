@@ -1,0 +1,3 @@
+2026-07-01 17:18:17 WARN  c.b.s.controller.HomeController - Received command [TURN_ON] WARNING: Device [LIGHT_03] is offline — command skipped.
+2026-07-01 17:18:17 ERROR c.b.smarthome.device.SmartLock - SECURITY ALERT: PIN cannot be empty for [Back Door Lock].
+2026-07-01 17:18:17 ERROR c.b.s.controller.HomeController - Command [UNLOCK] failed for device [LOCK_02]'
